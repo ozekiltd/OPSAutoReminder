@@ -1,0 +1,180 @@
+﻿<Window x:Class="AutoReminder.PreferencesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ViewModel1="clr-namespace:AutoReminder.ViewModel"
+        xmlns:View="clr-namespace:AutoReminder.View" Title="PreferencesWindow" Height="400" Width="500" Style="{DynamicResource WindowIconStyle}">
+    <Window.DataContext>
+        <ViewModel1:PreferencesViewModel></ViewModel1:PreferencesViewModel>
+    </Window.DataContext>
+    <Window.Resources>
+        <View:ReminderTypeConverter x:Key="reminderTypeConverter"/>
+        <View:SelectionTypeConverter x:Key="selectionTypeConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="134*"/>
+            <RowDefinition Height="197*"/>
+            <RowDefinition Height="39*"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.RowSpan="2">
+
+            <TabItem Header="General">
+                
+                <GroupBox Grid.Row="0" Header="API extension" Grid.RowSpan="2" Margin="0,0,0,200">
+                    <StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="5,5,5,5" Text="Extension on the Ozeki Phone System need to be configured. Sending SMS and emails, making calls will go through this extension."/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Extension ID:</Label>
+                            <TextBox Width="60" Height="20" Text="{Binding Preferences.ApiExtensionId}"></TextBox>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Reminders">
+                <Grid Margin="0,0,0,27">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="97*"/>
+                        <RowDefinition Height="173*"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="Add a Reminder" Grid.RowSpan="2" Margin="0,0,0,163">
+                        <StackPanel Margin="0,0,0,-12">
+                            <StackPanel Orientation="Horizontal">
+                                <Label>Reminder Type:</Label>
+                                <RadioButton GroupName="ReminderType" Margin="10,6,10,0" IsChecked="{Binding ReminderActionType, Converter={StaticResource reminderTypeConverter}, ConverterParameter=Sms,Mode=TwoWay}">Sms</RadioButton>
+                                <RadioButton GroupName="ReminderType" Margin="0,6,10,0" IsChecked="{Binding ReminderActionType, Converter={StaticResource reminderTypeConverter}, ConverterParameter=Email,Mode=TwoWay}">E-mail</RadioButton>
+                                <RadioButton GroupName="ReminderType" Margin="0,6,0,0" IsChecked="{Binding ReminderActionType, Converter={StaticResource reminderTypeConverter}, ConverterParameter=Call,Mode=TwoWay}">Call</RadioButton>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label>Reminder time:</Label>
+                                <TextBox Width="30" Height="20" Margin="10,0,0,0" Text="{Binding ReminderDays}"></TextBox>
+                                <Label>Day(s)</Label>
+                                <TextBox Width="30" Height="20" Margin="8,0,0,0" Text="{Binding ReminderHours}"></TextBox>
+                                <Label>Hour(s)</Label>
+                                <TextBox Width="30" Height="20" Margin="8,0,0,0" Text="{Binding ReminderMinutes}"></TextBox>
+                                <Label>Minute(s)</Label>
+                                <TextBox Width="30" Height="20" Margin="8,0,0,0" Text="{Binding ReminderSeconds}"></TextBox>
+                                <Label>Second(s)</Label>
+                            </StackPanel>
+                            <Button Content="Add" Width="50" Height="20" Margin="5,3,0,0" HorizontalAlignment="left" Command="{Binding Add}"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" Header="Active Reminders" Margin="0,10,0,-27" Grid.RowSpan="2">
+                        <StackPanel Margin="0,0,0,1">
+                            <ListBox ItemsSource="{Binding Preferences.ReminderActions}" SelectedItem="{Binding SelectedReminderAction}" Margin="0,0,0,0" Height="137" SelectionMode="Single">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding ActionType}"></Label>
+                                            <Label>reminder,</Label>
+                                            <Label Content="{Binding TimeBeforeDeadline}"></Label>
+                                            <Label>before deadline</Label>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <Button Content="Delete" Width="70" Height="20" HorizontalAlignment="Left" Margin="5,7,0,0" Command="{Binding Delete}"></Button>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="E-mail">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="74*"/>
+                        <RowDefinition Height="225*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="E-mail Settings" Margin="0,0,0,165" Grid.RowSpan="2">
+                        <StackPanel>
+                            <Label>
+                                <TextBlock>Please specify for which e-mail addresses should AutoReminder send e-mails to.</TextBlock>
+                            </Label>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton GroupName="EmailTypeGroup" Margin="5,5,0,0" IsChecked="{Binding Preferences.EmailSelectionType,Converter={StaticResource selectionTypeConverter},ConverterParameter=First, Mode=TwoWay}">First specified</RadioButton>
+                                <RadioButton GroupName="EmailTypeGroup" Margin="10,5,0,0" IsChecked="{Binding Preferences.EmailSelectionType,Converter={StaticResource selectionTypeConverter},ConverterParameter=All, Mode=TwoWay}">All</RadioButton>
+                            </StackPanel>
+                            <Label>
+                                <TextBlock>Please specify the sender email address which will appear in the e-mails sent.</TextBlock>
+                            </Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Width="250" Text="{Binding Preferences.SenderEmailAddress}" Margin="5,5,0,0"></TextBox>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                    </GroupBox>
+                    <GroupBox Header="E-mail Template" Grid.Row="1" Margin="0,65,0,0">
+                        <StackPanel>
+                            <Label>
+                                <TextBlock>AutoReminder will send out emails based on the template provided here. You can use <LineBreak/>
+                            custom parameters to make your template more responsive. Please refer to the <LineBreak/>
+                            documentation about the available parameters.</TextBlock>
+                            </Label>
+                            <TextBox Height="79" Text="{Binding Preferences.EmailMessageTemplate}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="SMS">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="140*"/>
+                        <RowDefinition Height="159*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Sms Settings" Margin="0,0,0,66">
+                        <StackPanel>
+                            <Label>
+                                <TextBlock>Please specify for which phone numbers should AutoReminder send SMSes to.</TextBlock>
+                            </Label>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton GroupName="SmsTypeGroup" Margin="5,5,0,0" IsChecked="{Binding Preferences.SmsPhoneSelectionType,Converter={StaticResource selectionTypeConverter},ConverterParameter=First, Mode=TwoWay}">First specified</RadioButton>
+                                <RadioButton GroupName="SmsTypeGroup" Margin="10,5,0,0" IsChecked="{Binding Preferences.SmsPhoneSelectionType,Converter={StaticResource selectionTypeConverter},ConverterParameter=All, Mode=TwoWay}">All</RadioButton>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Sms Template" Margin="0,79,0,0" Grid.RowSpan="2">
+                        <StackPanel>
+                            <Label>
+                                <TextBlock>AutoReminder will send out SMSes based on the template provided here. You can use <LineBreak/>
+                            custom parameters to make your template more responsive. Please refer to the <LineBreak/>
+                            documentation about the available parameters.</TextBlock>
+                            </Label>
+                            <TextBox Height="139" Text="{Binding Preferences.SmsMessageTemplate}" TextWrapping="Wrap" HorizontalAlignment="Left" Width="470"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Call">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="140*"/>
+                        <RowDefinition Height="159*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Header="Call Settings" Margin="0,0,0,66">
+                        <StackPanel>
+                            <Label>
+                                <TextBlock>Please specify for which phone numbers should AutoReminder issue the call to.</TextBlock>
+                            </Label>
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton GroupName="CallTypeGroup" Margin="5,5,0,0" IsChecked="{Binding Preferences.CallPhoneSelectionType,Converter={StaticResource selectionTypeConverter},ConverterParameter=First, Mode=TwoWay}">First specified</RadioButton>
+                                <RadioButton GroupName="CallTypeGroup" Margin="10,5,0,0" IsChecked="{Binding Preferences.CallPhoneSelectionType,Converter={StaticResource selectionTypeConverter},ConverterParameter=All, Mode=TwoWay}">All</RadioButton>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Call Template" Margin="0,79,0,0" Grid.RowSpan="2">
+                        <StackPanel>
+                            <Label>
+                                <TextBlock>AutoReminder will issue a text-to-speech call based on the template provided here.<LineBreak/> You can use 
+                            custom parameters to make your template more responsive. Please refer <LineBreak/>to the 
+                            documentation about the available parameters.</TextBlock>
+                            </Label>
+                            <TextBox Height="140" Text="{Binding Preferences.CallTemplate}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <StackPanel HorizontalAlignment="right" Grid.Row="2" Orientation="Horizontal" Width="150">
+            <Button Content="OK" Width="70" Height="20" Margin="0,0,5,0" Command="{Binding Ok}"/>
+            <Button Content="Cancel" Width="70" Height="20" Margin="0,0,5,0" Command="{Binding Cancel}"/>
+        </StackPanel>
+    </Grid>
+</Window>
